@@ -1,0 +1,13 @@
+{
+  "dependencies": {
+    "@chainlink/contracts": "^0.4.1",
+    "chainlink": "^0.8.2",
+    "dotenv": "^16.0.1",
+    "hardhat": "^2.9.7",
+    "hardhat-waffle": "^0.0.1-security"
+  },
+  "devDependencies": {
+    "@nomiclabs/hardhat-waffle": "^2.0.3",
+    "ethereum-waffle": "^3.4.4"
+  }
+}

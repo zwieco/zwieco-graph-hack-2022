@@ -9,6 +9,7 @@ contract VRFD20 is VRFConsumerBase {
 
     uint256 public nftAmount;
     mapping (address => address) public nfts;
+    mapping (address => uint256) public ids;
     address[] public arr;
     uint256 timestamp;
     
@@ -42,10 +43,11 @@ contract VRFD20 is VRFConsumerBase {
         return LINK.balanceOf(address(this));
     }
 
-    function addNft(address newAddress, address nftAddress) public {
+    function addNft(address newAddress, address nftAddress, uint256 id) public {
         nftAmount++;
         arr.push(nftAddress);
         nfts[nftAddress] = newAddress;
+        ids[nftAddress] = id;
     }
 
     function updateNft() public returns(address) {

@@ -1,18 +1,19 @@
 require("@nomiclabs/hardhat-waffle");
 require('@nomiclabs/hardhat-ethers');
-const path = require('path');
+require("@nomiclabs/hardhat-etherscan");
 require("dotenv").config()
 /**
  * @type import('hardhat/config').HardhatUserConfig
  */
 module.exports = {
-  defaultNetwork: "matic",
+  defaultNetwork: "mumbai",
   networks: {
     hardhat: {
     },
-    matic: {
+    mumbai: {
       url: process.env.DATAHUB_API,
-      accounts: [process.env.PRIVATE_KEY]
+      accounts: [process.env.PRIVATE_KEY],
+      gas: 9000000,
     },
   },
   etherscan: {

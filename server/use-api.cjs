@@ -1,7 +1,3 @@
-//import React from "react";
-//import ReactDOM from "react-dom";
-//import App from "./App";
-
 const express = require('express');
 const { createProxyMiddleware } = require('http-proxy-middleware');
 const path = require('path');
@@ -31,5 +27,3 @@ app.post('/api/asset/:id/export', proxy);
 
 
 app.listen(PORT);
-
-// ReactDOM.render(<App />, document.getElementById("root"));

@@ -19,8 +19,6 @@ async function mintNft() {
     console.log(ethereum)
     console.log(chainId);
     await ethereum.enable();
-    console.log(web3);
-    //const web3 = new Web3(provider);
     let ourabi = [
         {
           "inputs": [
@@ -246,9 +244,7 @@ async function mintNft() {
     const mintBtn = document.getElementById('mint-btn');
 
     console.log(minter);
-    // let file = document.getElementById('file').files[0];
     let file = window.livepeer.files[0];
-    // console.log('file object', document.getElementById('file'));
     let title = document.getElementById("title").value || "My NFT";
     console.log(title)
     console.log(file)
@@ -263,7 +259,7 @@ async function mintNft() {
 
     mintBtn.innerText = 'Minting....'
     console.log("asset", asset);
-    // // optional, optimizes the video for the NFT
+    // optional, optimizes the video for the NFT
     asset = await minter.api.nftNormalize(asset);
     console.log(asset)
     const nftMetadata = {

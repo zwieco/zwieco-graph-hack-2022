@@ -3,7 +3,7 @@ import { WalletConnectConnector } from "@web3-react/walletconnect-connector";
 import { InjectedConnector } from "@web3-react/injected-connector";
 import { useWeb3React } from '@web3-react/core'
 import { Web3Provider } from "@ethersproject/providers";
-import { getHash } from "./helper";
+import { getHash, getLeaderboard } from "./helper";
 import React from 'react';
 
 const CoinbaseWallet = new WalletLinkConnector({
@@ -48,7 +48,8 @@ export class Video extends React.Component {
     constructor () {
         super();
         this.state = {
-            data: null
+            data: null,
+            leaderboard: null
         } 
       }
 
@@ -57,6 +58,7 @@ export class Video extends React.Component {
         const link = "https://ipfs.io/ipfs/" + hash[0];
         console.log(link);
         this.setState({data: link, caption: hash[1]});
+        const hello = await getLeaderboard();
     }
     
     render() {
@@ -69,6 +71,47 @@ export class Video extends React.Component {
             <div>
                 <iframe src={this.state.data} width="560" height="315" frameBorder="0" allowFullScreen=""></iframe>
                 <p class="grid place-items-center inline-block">Caption: {this.state.caption}</p>
+            </div>
+            }
+        </div>
+        );
+    }
+}
+
+export class Leaderboard extends React.Component {
+    constructor () {
+        super();
+        this.state = {
+            data: null
+        } 
+      }
+
+    async componentDidMount() {
+        const hash = await getLeaderboard();
+        const linkArr = [];
+        for (let i = 0; i < hash.length; i++) {
+            linkArr.push(["https://ipfs.io/ipfs/" + hash[i][0], hash[i][1]]);
+        }
+        console.log(linkArr);
+        var loopData = ''
+        var i = 0 ;
+        while (i < linkArr.length){
+            loopData += `<iframe src=${linkArr[0]} width="560" height="315" frameBorder="0" allowFullScreen=""></iframe>`;
+            loopData += `<p class="grid place-items-center inline-block">Caption: ${linkArr[1]}</p>`
+            i++;
+        }
+        this.setState({leaderboard: loopData});
+    }
+    
+    render() {
+        return (
+        <div class="grid place-items-center inline-block align-bottom">
+            {this.state.data === null ? 
+                <div>Loading</div>
+            :
+            
+            <div>
+                {this.state.leaderboard}
             </div>
             }
         </div>

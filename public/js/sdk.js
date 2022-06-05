@@ -1,6 +1,6 @@
 const apiOpts = {};
 
-const deployedContractAddress = "0x3eA5c7579c846312F21A5D137614deD81c1170B0";
+const deployedContractAddress = "0xd5CF5aDA56328E05f527928C5A31eE668db35771";
 
 const ourabi = [
     {

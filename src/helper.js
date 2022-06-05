@@ -1,6 +1,10 @@
+import { ApolloClient, InMemoryCache, gql } from '@apollo/client'
+
+const APIURL = 'https://api.thegraph.com/subgraphs/name/jonathanzwiebel/fifteen-minutes-of-fame'
+
 const apiOpts = {};
 
-const deployedContractAddress = "0x3eA5c7579c846312F21A5D137614deD81c1170B0";
+const deployedContractAddress = "0xd5CF5aDA56328E05f527928C5A31eE668db35771";
 
 const ourabi = [
     {
@@ -313,4 +317,109 @@ export async function getHash() {
     const caption = await deployedContract.functions.captions(Number(tokenId[0]));
     console.log(caption)
     return [json['properties']['video'].split('//')[1], caption[0]]
+}
+
+export async function getLeaderboard() {
+    const randomQuery = `
+    query {
+        randomNumbers {
+            id
+            generatedTimestamp
+            value
+        }
+    }
+    `
+    const nftsQuery = `
+    query nftsQuery ($lowerBound:BigInt, $upperBound:BigInt) {
+        nfts(where: {mintedTimestamp_gte: "0", mintedTimestamp_lt: "1654435440"}) {
+          id
+          collectionID
+          nftID
+        }
+    }
+    `
+
+    const client = new ApolloClient({
+        uri: APIURL,
+        cache: new InMemoryCache(),
+    })
+
+    let timestamps = [];
+    let randomNumbers = [];
+
+    await client
+        .query({
+            query: gql(randomQuery),
+        })
+        .then(function(data) {
+            const arr = data['data']['randomNumbers'];
+            console.log('Subgraph data: ', arr);
+            for (let i = 0; i < arr.length; i++) {
+                timestamps.push(arr[i]['generatedTimestamp']);
+                randomNumbers.push(arr[i]['value']);
+            }
+            console.log(timestamps);
+            console.log(randomNumbers);
+        })
+        .catch((err) => {
+            console.log('Error fetching data: ', err)
+        })
+    const selectedNfts = [];
+    for (let i = 0; i < timestamps.length - 1; i++) {
+        await client
+            .query({
+                query: gql(nftsQuery),
+                variables: {
+                    lowerBound: timestamps[0],
+                    upperBound: timestamps[i+1]
+                }
+            })
+            .then(function(data) {
+                const arr = data['data']['nfts'];
+                console.log('Subgraph data pt 2: ', arr);
+                selectedNfts.push(arr[randomNumbers[i+1] % arr.length]);
+            })
+            .catch((err) => {
+                console.log('Error fetching data: ', err)
+            })
+        
+    }
+    console.log(selectedNfts);
+    const output = []
+
+    const provider = new ethers.providers.Web3Provider(window.ethereum, "any");
+    // Prompt user for account connections
+    await provider.send("eth_requestAccounts", []);
+    let ethereum = window.ethereum;
+    let chainId = window.ethereum.chainId;
+    
+    ethereum.request({
+        method: 'wallet_addEthereumChain',
+        params: [{ chainId: '0x13881' }]
+    }).then(response => console.log(response))
+
+
+    const signer = provider.getSigner();
+    console.log("Account:", await signer.getAddress());
+    console.log(ethereum)
+    console.log(chainId);
+    await ethereum.enable();
+
+    for (let i = 0; i < selectedNfts.length; i++) {
+        const nftID = selectedNfts[i]['nftID'];
+        console.log(nftID)
+        const getContract = new ethers.Contract(nftContractAddress, nftMetadataAbi, signer);
+        const res = await getContract.functions.tokenURI(Number(nftID));
+        console.log(res);
+        const response = await fetch("https://ipfs.io/ipfs/" + res[0].split("//")[1]);
+        console.log(response);
+        const json = await response.json();
+        console.log(json);
+        const deployedContract = new ethers.Contract(deployedContractAddress, ourabi, signer);
+        const caption = await deployedContract.functions.captions(Number(nftID));
+        console.log(caption)
+        output.push([json['properties']['video'].split('//')[1], caption[0]])
+    }
+    console.log(output);
+    return output;
 }

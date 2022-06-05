@@ -3,6 +3,8 @@ import { WalletConnectConnector } from "@web3-react/walletconnect-connector";
 import { InjectedConnector } from "@web3-react/injected-connector";
 import { useWeb3React } from '@web3-react/core'
 import { Web3Provider } from "@ethersproject/providers";
+import { getHash } from "./helper";
+import React from 'react';
 
 const CoinbaseWallet = new WalletLinkConnector({
  url: `https://ethereum-mainnet--rpc.datahub.figment.io/apikey/1b5e74e28f1e5c4342cee7917c40ebaf`,
@@ -36,6 +38,35 @@ export function App() {
         </div>
         
     )
+}
+
+
+export class Video extends React.Component {
+    constructor () {
+        super();
+        this.state = {
+            data: null
+        } 
+      }
+
+    async componentDidMount() {
+        const hash = await getHash();
+        const link = "https://ipfs.io/ipfs/" + hash;
+        console.log(link);
+        this.setState({data: link});
+    }
+    
+    render() {
+        return (
+        <div class="grid place-items-center inline-block align-bottom">
+            {this.state.data === null ? 
+                <div>Loading</div>
+            :
+            <iframe src={this.state.data} width="560" height="315" frameBorder="0" allowFullScreen=""></iframe>
+            }
+        </div>
+        );
+    }
 }
 
 const apiOpts = {};

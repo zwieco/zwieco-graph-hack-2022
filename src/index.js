@@ -3,7 +3,7 @@ import { Web3Provider } from "@ethersproject/providers";
 import React from "react";
 import ReactDOM from "react-dom/client";
 import render from "react-dom";
-import { App } from './App.js'
+import { App, Video } from './App.js'
 
 function getLibrary(provider) {
   return new Web3Provider(provider);
@@ -14,6 +14,7 @@ root.render(
   <React.StrictMode>
     <Web3ReactProvider getLibrary={getLibrary}>
         <App />
+        <Video />
     </Web3ReactProvider>
   </React.StrictMode>
 );

@@ -9,15 +9,16 @@ contract VRFD20 is VRFConsumerBase {
 
     uint256 public nftAmount;
     mapping (address => address) public nfts;
-    mapping (address => uint256) public ids;
     address[] public arr;
+    uint256[] public ids;
     uint256 timestamp;
     
     uint256 public randomResult;
     uint256 public porque;
 
-    event NumberGenerated(uint256 indexed requestId);
-    event nftUpdated(address newNft);
+    event NumberGenerated(uint256 indexed requestId, uint256 indexed id);
+    event nftUpdated(address newNft, uint256 indexed id);
+    
 
     /**
      * Constructor inherits VRFConsumerBase
@@ -46,16 +47,16 @@ contract VRFD20 is VRFConsumerBase {
     function addNft(address newAddress, address nftAddress, uint256 id) public {
         nftAmount++;
         arr.push(nftAddress);
+        ids.push(id);
         nfts[nftAddress] = newAddress;
-        ids[nftAddress] = id;
+        emit nftUpdated(nftAddress, id);
     }
 
     function updateNft() public returns(address) {
-        if (timestamp + 5 minutes < block.timestamp) {
+        if (timestamp + 1 minutes < block.timestamp) {
             address output = arr[randomResult];
             timestamp = block.timestamp;
             getRandomNumber();
-            emit nftUpdated(output);
             return output;
         }
     }
@@ -73,5 +74,6 @@ contract VRFD20 is VRFConsumerBase {
      */
     function fulfillRandomness(bytes32 requestId, uint256 randomness) internal override {
         randomResult = (randomness % nftAmount);
+        emit NumberGenerated(randomResult, ids[randomResult]);
     }
 }

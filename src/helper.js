@@ -1,6 +1,6 @@
 const apiOpts = {};
 
-const deployedContractAddress = "0x6a9Cdd203b5aE5d8c9B68C736aEE1DF7268523B4";
+const deployedContractAddress = "0x3eA5c7579c846312F21A5D137614deD81c1170B0";
 
 const ourabi = [
     {
@@ -27,12 +27,6 @@ const ourabi = [
           "internalType": "uint256",
           "name": "requestId",
           "type": "uint256"
-        },
-        {
-          "indexed": true,
-          "internalType": "uint256",
-          "name": "id",
-          "type": "uint256"
         }
       ],
       "name": "NumberGenerated",
@@ -56,6 +50,24 @@ const ourabi = [
       ],
       "name": "nftUpdated",
       "type": "event"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "id",
+          "type": "uint256"
+        },
+        {
+          "internalType": "string",
+          "name": "caption",
+          "type": "string"
+        }
+      ],
+      "name": "addCaption",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
     },
     {
       "inputs": [
@@ -94,6 +106,25 @@ const ourabi = [
           "internalType": "address",
           "name": "",
           "type": "address"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "name": "captions",
+      "outputs": [
+        {
+          "internalType": "string",
+          "name": "",
+          "type": "string"
         }
       ],
       "stateMutability": "view",
@@ -197,19 +228,6 @@ const ourabi = [
     },
     {
       "inputs": [],
-      "name": "porque",
-      "outputs": [
-        {
-          "internalType": "uint256",
-          "name": "",
-          "type": "uint256"
-        }
-      ],
-      "stateMutability": "view",
-      "type": "function"
-    },
-    {
-      "inputs": [],
       "name": "randomResult",
       "outputs": [
         {
@@ -286,11 +304,13 @@ export async function getHash() {
     console.log(Number(tokenId[0]));
 
     const getContract = new ethers.Contract(nftContractAddress, nftMetadataAbi, signer);
-    const res = await getContract.functions.tokenURI(Number(114));//Number(tokenId[0]) UPDATEUPDATEUPDATE
+    const res = await getContract.functions.tokenURI(Number(tokenId[0]));
     console.log(res);
     const response = await fetch("https://ipfs.io/ipfs/" + res[0].split("//")[1]);
     console.log(response);
     const json = await response.json();
     console.log(json);
-    return json['properties']['video'].split('//')[1]
+    const caption = await deployedContract.functions.captions(Number(tokenId[0]));
+    console.log(caption)
+    return [json['properties']['video'].split('//')[1], caption[0]]
 }

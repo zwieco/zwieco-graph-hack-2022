@@ -9,6 +9,7 @@ contract VRFD20 is VRFConsumerBase {
 
     uint256 public nftAmount;
     mapping (address => address) public nfts;
+    mapping (uint256 => string) public captions;
     address[] public arr;
     uint256[] public ids;
     uint256 timestamp;
@@ -79,4 +80,9 @@ contract VRFD20 is VRFConsumerBase {
     function getId(uint256 index) public view returns(uint256 output){
         return ids[index];
     }
+
+    function addCaption(uint256 id, string memory caption) public {
+        captions[id] = caption;
+    }
+
 }
